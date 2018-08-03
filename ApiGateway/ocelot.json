@@ -1,0 +1,65 @@
+﻿{
+  "ReRoutes": [
+    {
+      "DownstreamPathTemplate": "/api/customers",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/customers",
+      "UpstreamHttpMethod": [ "Get" ],
+      "ServiceName": "customers",
+      "UseServiceDiscovery": true,
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5000,
+        "TimeoutValue": 2000
+      },
+      "Key": "customers"
+    },
+    {
+      "DownstreamPathTemplate": "/api/customers/{id}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/customers/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "ServiceName": "customers",
+      "UseServiceDiscovery": true
+    },
+    {
+      "DownstreamPathTemplate": "/api/products",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/products",
+      "UpstreamHttpMethod": [ "Get" ],
+      "ServiceName": "products",
+      "UseServiceDiscovery": true,
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "3s",
+        "PeriodTimespan": 2,
+        "Limit": 1
+      },
+      "Key": "products"
+    }
+  ],
+  "Aggregates": [
+    {
+      "ReRouteKeys": [
+        "customers",
+        "products"
+      ],
+      "UpstreamPathTemplate": "/all",
+      "Aggregator": "AllAggregator"
+    }
+  ],
+  "GlobalConfiguration": {
+    "ServiceDiscoveryProvider": {
+      "Host": "localhost",
+      "Port": 8500,
+      "Type": "Consul"
+    },
+    "RequestIdKey": "OcRequestId",
+    "AdministrationPath": "/administration",
+    "RateLimitOptions": {
+      "DisableRateLimitHeaders": false,
+      "QuotaExceededMessage": "out of rate limit"
+    }
+  }
+}
